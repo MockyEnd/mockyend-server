@@ -13,7 +13,7 @@ from app import __version__
 
 class Settings(BaseSettings):
     # Application
-    name: str = "MockEnd"
+    name: str = "MockyEnd"
     version: str = __version__
     API_V1_STR: str = "v1"
     DEBUG: bool = True

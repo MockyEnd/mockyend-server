@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "mockend"
+name = "MockyEnd"
 version = "0.1.0"
 description = ""
 authors = ["Rafael Ribeiro <tecinfo.rafael@gmail.com>"]
