@@ -32,6 +32,9 @@ jobs:
     - name: Install MockyEnd dependencies
       run: |
         poetry install
+    - name: Shell Virtual Env
+      run: |
+        poetry shell
     # - name: Lint with flake8
     #   run: |
     #     # stop the build if there are Python syntax errors or undefined names
