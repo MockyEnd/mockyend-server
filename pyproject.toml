@@ -13,7 +13,16 @@ pydantic-settings = "^2.2.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.2"
+pytest-cov = "^5.0.0"
+codecov = "^2.1.13"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "--cov=app --cov-report=term-missing"
+testpaths = [
+    "tests"
+]
