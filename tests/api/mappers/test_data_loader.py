@@ -73,6 +73,8 @@ def create_data_template_with_list_of_primitive_type(data_type: DataType, values
     [
         (DataType.STR, ["Python", "Java", "Rust", "Crystal", "Javascript"]),
         (DataType.INT, [i for i in range(100)]),
+        (DataType.BOOL, [True, False, True]),
+        (DataType.DICT, [{"status": "OK", "count": 10}, {"status": "Not OK", "count": 0}]),
     ]
 )
 def test_data_loader_with_list_of_primitive_values(data_type: DataType, values: List):
