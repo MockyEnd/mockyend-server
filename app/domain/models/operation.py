@@ -15,8 +15,8 @@ class Method(StrEnum):
 
 class Operation(BaseModel):
     name: str
-    summary: str
-    description: str
+    summary: str | None = None
+    description: str | None = None
     method: Method
     path: str
     response: Any

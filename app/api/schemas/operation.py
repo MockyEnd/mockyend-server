@@ -12,9 +12,6 @@ class DataType(StrEnum):
     DICT = "DICT"
     LIST = "LIST"
 
-    def is_class_type(self):
-        return self == DataType.CLASS
-
 
 class PrimitiveValue(BaseModel):
     value: Any

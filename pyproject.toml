@@ -22,7 +22,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "--cov=app --cov-report=term-missing"
+#addopts = "--cov=app --cov-report=term-missing"
 testpaths = [
     "tests"
 ]

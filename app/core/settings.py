@@ -62,7 +62,6 @@ class Settings(BaseSettings):
         return f"postgresql://{self.db_user}:{self._db_password_escaped_for_alembic}@{self.db_host}/{self.db_name}"
 
 
-
 @lru_cache
 def get_settings(env: str | None = None) -> Settings:
     return Settings()  # type: ignore
