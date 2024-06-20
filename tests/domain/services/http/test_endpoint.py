@@ -1,3 +1,7 @@
+import pytest
+from httpx import AsyncClient
+from starlette.status import HTTP_200_OK
+
 from app.domain.models.operation import Operation, Method
 from app.domain.services.http.endpoint import build_get_endpoint, register_endpoint
 from app.main import app
@@ -48,29 +52,58 @@ def test_register_endpoint():
     assert len(app.routes) == total_routes + 1
 
 
-def test_register_more_than_one_get_endpoint():
-    # Given
-    total_routes = len(app.routes)
+PING_URL = "/v1/ping"
+HEALTH_URL = "/v1/health"
+
+
+def _register_ping_endpoint():
     ping_operation = Operation(
         name="Ping",
         method=Method.GET,
-        path="/v1/ping",
+        path=PING_URL,
         response="pong"
     )
 
+    return register_endpoint(operation=ping_operation, app=app)
+
+
+def _register_health_endpoint():
     health_operation = Operation(
         name="Health",
         method=Method.GET,
-        path="/v1/Health",
+        path=HEALTH_URL,
         response="Ok"
     )
 
+    return register_endpoint(operation=health_operation, app=app)
+
+
+def test__register_more_than_one_get_endpoint():
+    # Given
+    total_routes = len(app.routes)
+
     # When
-    is_ping_registered = register_endpoint(operation=ping_operation, app=app)
-    is_health_registered = register_endpoint(operation=health_operation, app=app)
+    is_ping_registered = _register_ping_endpoint()
+    is_health_registered = _register_health_endpoint()
 
     # Then
     assert is_ping_registered is True
     assert is_health_registered is True
     assert app.openapi_schema is None
     assert len(app.routes) == total_routes + 2
+
+
+@pytest.mark.asyncio
+async def test__call_registered_endpoints():
+    _register_ping_endpoint()
+    _register_health_endpoint()
+
+    async with AsyncClient(app=app, base_url="http://test") as client:
+        ping_response = await client.get(url=PING_URL)
+
+        assert ping_response.status_code == HTTP_200_OK
+        assert ping_response.json() == "pong"
+
+        health_response = await client.get(url=HEALTH_URL)
+        assert health_response.status_code == HTTP_200_OK
+        assert health_response.json() == "Ok"
