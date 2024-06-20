@@ -42,6 +42,16 @@ jobs:
 #      run: |
 #        poetry run pytest
 
+    - name: Create .env file from secrets
+      env:
+        SECRETS: ${{ toJSON(secrets) }}
+      run: |
+        echo $SECRETS | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' > .env
+
+    - name: Display .env file
+      run: |
+        cat .env
+
     - name: Run tests with coverage
       run: |
         poetry run pytest --cov=app --cov-report=xml
