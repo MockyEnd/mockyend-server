@@ -1,9 +1,11 @@
+from unittest.mock import MagicMock
+
 import pytest
 from httpx import AsyncClient
 from starlette.status import HTTP_200_OK
 
 from app.domain.models.operation import Operation, Method
-from app.domain.services.http.endpoint import build_get_endpoint, register_endpoint
+from app.domain.services.http.endpoint import build_get_endpoint, register_endpoint, get_router_builder
 from app.main import app
 
 
@@ -33,7 +35,7 @@ def test_build_get_endpoint():
     assert ping_route.path == operation.path
 
 
-def test_register_endpoint():
+def test__register_endpoint():
     # Given
     total_routes = len(app.routes)
     operation = Operation(
@@ -50,6 +52,38 @@ def test_register_endpoint():
     assert registered is True
     assert app.openapi_schema is None
     assert len(app.routes) == total_routes + 1
+
+
+def test__register_endpoint_when_has_error():
+    # Given
+    total_routes = len(app.routes)
+    operation = Operation(
+        name="Ping",
+        method=Method.GET,
+        path="/v1/ping",
+        response="pong"
+    )
+
+    mocked_app = MagicMock()
+    error_message = "Unexpected error!"
+    mocked_app.include_router.side_effect = Exception(error_message)
+
+    # When
+    with pytest.raises(Exception) as err:
+        register_endpoint(operation=operation, app=mocked_app)
+
+    # Then
+    assert "Error on building new route from operation" in str(err.value)
+    assert error_message in str(err.value)
+
+
+def test__get_router_builder_with_invalid_method():
+
+    with pytest.raises(Exception) as err:
+        get_router_builder(method="NOT_IMPLEMENTED_METHOD")
+
+    # Then
+    assert "Error, HTTP Method not implemented" in str(err.value)
 
 
 PING_URL = "/v1/ping"

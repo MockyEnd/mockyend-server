@@ -11,8 +11,9 @@ def register_endpoint(operation: Operation, app: FastAPI) -> bool:
     try:
         app.include_router(router)
     except Exception as err:
-        raise Exception(f"Error on building new route from operation = {operation}. "
-                        f"Stack: {str(err)}") from err
+        raise Exception(
+            f"Error on building new route from operation: {operation}. Stack: {str(err)}"
+        ) from err
     else:
         app.openapi_schema = None  # Forces a new /docs generation
     return True
