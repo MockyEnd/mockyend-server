@@ -33,4 +33,3 @@ async def register_operation(request: CreateEndpointRequest):
         endpoint=operation.path,
         status="registered"
     )
-

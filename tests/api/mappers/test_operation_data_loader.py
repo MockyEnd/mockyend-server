@@ -178,3 +178,35 @@ def test_data_loader_with_object_value():
     assert str(type(shipping.recipient)) == "<class 'app.api.mappers.operation.Customer'>"
     assert shipping.recipient.name == "Recipient"
     assert shipping.recipient.document == "987.654.321-01"
+
+
+def test_data_loader_when_class_name_not_provided_still_works():
+    shipping_attributes = {
+        "data_type": DataType.CLASS,
+        "object_value": {
+            "class_name": "Shipping",
+            "attributes": {
+                "package_id": "P_123",
+                "sender": {
+                    # attribute class name is not provided for sender object
+                    "object_value": {
+                        "attributes": {
+                            "name": "Sender",
+                            "document": "123.456.789-01"
+                        }
+                    }
+                },
+            }
+        }
+    }
+
+    data_template = DataTemplate.model_validate(shipping_attributes)
+
+    # When
+    data_loader = DataLoader()
+    result = data_loader.compile(data_template=data_template)
+
+    # Then
+    assert result is not None
+    assert str(type(result)) == "<class 'app.api.mappers.operation.Shipping'>"
+    assert isinstance(result.sender, dict)

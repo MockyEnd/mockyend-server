@@ -3,6 +3,7 @@ from typing import Any
 from pydantic import create_model, ValidationError
 from typer.models import NoneType
 
+from app.api.mappers.exceptions import ClassNameNotProvidedError
 from app.api.schemas.operation import CreateEndpointRequest, DataType, DataTemplate
 from app.domain.models.operation import Operation, Method
 
@@ -38,15 +39,6 @@ class DataLoader:
     def _create_class_type(self, data_template: DataTemplate) -> object:
         return self.build_object(data_template=data_template)
 
-    def get_class_attributes(self, attributes: dict | None) -> dict:
-        typed_attributes = {}
-        for attribute, value in attributes.items():
-            attrib_type = type(value)
-            required_attrib = None if isinstance(value, NoneType) else ...
-            typed_attributes[attribute] = (attrib_type, required_attrib)
-
-        return typed_attributes
-
     def build_object(self, data_template: DataTemplate) -> object:
         class_name = data_template.object_value.class_name
         attributes_values = data_template.object_value.attributes
@@ -60,7 +52,7 @@ class DataLoader:
                     required_attrib = self.is_required_field(value=value)
                     typed_attributes[attribute] = (type(inner_object), required_attrib)
                     attributes_values[attribute] = inner_object
-                except ValidationError as err:
+                except ClassNameNotProvidedError as err:
                     attrib_type = type(value)
                     required_attrib = self.is_required_field(value=value)
                     typed_attributes[attribute] = (attrib_type, required_attrib)
@@ -68,6 +60,9 @@ class DataLoader:
                 attrib_type = type(value)
                 required_attrib = self.is_required_field(value=value)
                 typed_attributes[attribute] = (attrib_type, required_attrib)
+
+        if class_name is None:
+            raise ClassNameNotProvidedError("Class name attribute not provided for a dict object")
 
         dynamic_class = create_model(class_name, **typed_attributes)
         return dynamic_class(**attributes_values)

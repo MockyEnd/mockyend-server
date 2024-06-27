@@ -39,27 +39,27 @@ class Settings(BaseSettings):
         env_prefix="APP_", env_file=".env", env_file_encoding="utf-8", extra="ignore"
     )
 
-    @property
-    def db_dsn(self) -> URL:
-        return URL.create(
-            drivername="postgresql+asyncpg",
-            username=self.db_user,
-            password=self.db_password,
-            host=self.db_host,
-            port=self.db_port,
-            database=self.db_name,
-        )
+    # @property
+    # def db_dsn(self) -> URL:
+    #     return URL.create(
+    #         drivername="postgresql+asyncpg",
+    #         username=self.db_user,
+    #         password=self.db_password,
+    #         host=self.db_host,
+    #         port=self.db_port,
+    #         database=self.db_name,
+    #     )
 
-    @property
-    def _db_password_escaped_for_alembic(self) -> str:
-        """Return the password escaping the special characters as required for Alembic.
-        Follows recomendation on https://docs.sqlalchemy.org/en/13/core/engines.html#database-urls.
-        """
-        return urllib.parse.quote_plus(self.db_password).replace("%", "%%")
+    # @property
+    # def _db_password_escaped_for_alembic(self) -> str:
+    #     """Return the password escaping the special characters as required for Alembic.
+    #     Follows recomendation on https://docs.sqlalchemy.org/en/13/core/engines.html#database-urls.
+    #     """
+    #     return urllib.parse.quote_plus(self.db_password).replace("%", "%%")
 
-    @property
-    def db_dsn_sync(self) -> str:
-        return f"postgresql://{self.db_user}:{self._db_password_escaped_for_alembic}@{self.db_host}/{self.db_name}"
+    # @property
+    # def db_dsn_sync(self) -> str:
+    #     return f"postgresql://{self.db_user}:{self._db_password_escaped_for_alembic}@{self.db_host}/{self.db_name}"
 
 
 @lru_cache
