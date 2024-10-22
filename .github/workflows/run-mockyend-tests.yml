@@ -32,7 +32,7 @@ jobs:
         # if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Install MockyEnd dependencies
       run: |
-        poetry install
+        poetry install --no-root
     # - name: Lint with flake8
     #   run: |
     #     # stop the build if there are Python syntax errors or undefined names
@@ -55,7 +55,7 @@ jobs:
 
     - name: Run tests with coverage
       run: |
-        poetry run pytest --cov=app --cov-report=xml
+        poetry run pytest -v --cov=app --cov-report=xml
 
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v4.0.1
