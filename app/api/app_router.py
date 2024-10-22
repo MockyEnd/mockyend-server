@@ -5,15 +5,13 @@ router = APIRouter()
 
 
 class HealthResponse(BaseModel):
-    message: str
+	message: str
 
 
 @router.get(
-    path="/health",
-    responses={
-        status.HTTP_200_OK: {"description": "Health response OK"}
-    },
-    response_model=HealthResponse,
+	path="/health",
+	responses={status.HTTP_200_OK: {"description": "Health response OK"}},
+	response_model=HealthResponse,
 )
 async def health():
-    return HealthResponse(message="It's running!")
+	return HealthResponse(message="It's running!")
