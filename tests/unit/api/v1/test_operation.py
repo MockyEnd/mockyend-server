@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 import pytest
 from httpx import AsyncClient
 from starlette.status import (
@@ -6,11 +8,31 @@ from starlette.status import (
 	HTTP_400_BAD_REQUEST,
 )
 
+from app.domain.models.operation import DataType, Method
 from app.main import app
+from tests.unit import override_db_repository, FetchOne, DatabaseResult
 
 
 @pytest.mark.asyncio
 async def test__register_operation(raw_operation_register_request):
+	class OperationFetch(FetchOne):
+		def fetchone(self) -> DatabaseResult:
+			return DatabaseResult(
+				{
+					"id": 1,
+					"uuid": uuid4(),
+					"name": raw_operation_register_request["name"],
+					"summary": raw_operation_register_request["summary"],
+					"description": raw_operation_register_request["description"],
+					"method": Method.GET,
+					"path": raw_operation_register_request["path"],
+					"response_type": DataType.LIST,
+					"response_content": True,
+				}
+			)
+
+	override_db_repository(fetcher=OperationFetch())
+
 	async with AsyncClient(app=app, base_url="http://test") as client:
 		response = await client.post(url="/operation/register", json=raw_operation_register_request)
 		json_response = response.json()

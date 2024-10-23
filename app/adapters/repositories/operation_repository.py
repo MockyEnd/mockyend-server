@@ -2,9 +2,9 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from pydantic import BaseModel
+from sqlalchemy import bindparam
 from sqlalchemy import text
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy import bindparam
 
 from app.adapters.repositories.base_repository import (
 	BaseRepository,
@@ -32,7 +32,7 @@ class OperationRepositoryImpl(OperationRepository):
 		stmt = (
 			text(
 				"""
-            INSERT INTO operation (
+                INSERT INTO operation (
                 name,
                 summary,
                 description,
@@ -64,66 +64,12 @@ class OperationRepositoryImpl(OperationRepository):
 			)
 		)
 
-		# stmt = text("SELECT id, name FROM user WHERE name=:name "
-		#             "AND timestamp=:timestamp")
-		# stmt = stmt.bindparams(
-		#     bindparam('name', type_=String),
-		#     bindparam('timestamp', type_=DateTime)
-		# )
-		# stmt = stmt.bindparams(
-		#     name='jack',
-		#     timestamp=datetime.datetime(2012, 10, 8, 15, 12, 5)
-		# )
-
 		result = await self._database.write(stmt=stmt)
 		row = result.fetchone()
 		if row is None:
 			DatabaseError("Unexpected error: Operation creation failed.")
 
 		return Operation.model_validate(row._mapping)
-
-	# async def save(self, operation: OperationCreate) -> Operation:
-	#     serialized_response = self._serialize_response(operation.response_content)
-	#
-	#     stmt = text(
-	#         """
-	#         INSERT INTO operation (
-	#             name,
-	#             summary,
-	#             description,
-	#             method,
-	#             path,
-	#             response_type,
-	#             response_content
-	#         ) VALUES (
-	#             :name,
-	#             :summary,
-	#             :description,
-	#             :method,
-	#             :path,
-	#             :response_type,
-	#             :response_content:::jsonb
-	#         )
-	#         RETURNING *
-	#         """
-	#     )
-	#
-	#     params = {
-	#         'name': operation.name,
-	#         'summary': operation.summary,
-	#         'description': operation.description,
-	#         'method': operation.method,
-	#         'path': operation.path,
-	#         'response_type': operation.response_type,
-	#         'response_content': serialized_response
-	#     }
-	#
-	#     result = await self._database.write(stmt=stmt.bindparams(**params))
-	#     row = result.fetchone()
-	#     if row is None:
-	#         DatabaseError("Unexpected error: Operation creation failed.")
-	#
-	#     return Operation.model_validate(row._mapping)
 
 	def _serialize_response(self, response_content: Any | None):
 		if response_content:
