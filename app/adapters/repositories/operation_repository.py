@@ -67,7 +67,7 @@ class OperationRepositoryImpl(OperationRepository):
 		result = await self._database.write(stmt=stmt)
 		row = result.fetchone()
 		if row is None:
-			DatabaseError("Unexpected error: Operation creation failed.")
+			raise DatabaseError("Unexpected error: Operation creation failed.")
 
 		return Operation.model_validate(row._mapping)
 
@@ -86,5 +86,5 @@ class OperationRepositoryImpl(OperationRepository):
 	async def get_by_id(self, _id: int) -> Operation:
 		pass
 
-	async def get_by_uuid(self, _id: int) -> Operation:
+	async def get_by_uuid(self, uuid: int) -> Operation:
 		pass

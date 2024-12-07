@@ -1,3 +1,4 @@
+from uuid import UUID
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic
 
@@ -16,5 +17,5 @@ class BaseRepository(ABC, Generic[T]):
 		raise not_implemented_error(method_name=f"{self.__class__.__name__}.get_by_id")
 
 	@abstractmethod
-	async def get_by_uuid(self, _id: int) -> T:
+	async def get_by_uuid(self, uuid: UUID) -> T:
 		raise not_implemented_error(method_name=f"{self.__class__.__name__}.get_by_uuid")
